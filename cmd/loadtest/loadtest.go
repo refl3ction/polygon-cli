@@ -1545,21 +1545,20 @@ func loadtestAvailStore(ctx context.Context, c *gsrpc.SubstrateAPI, nonce uint64
 
 func configureTransactOpts(tops *bind.TransactOpts) *bind.TransactOpts {
 	ltp := inputLoadTestParams
-	if *ltp.LegacyTransactionMode {
-		if ltp.ForceGasPrice != nil && *ltp.ForceGasPrice != 0 {
-			tops.GasPrice = big.NewInt(0).SetUint64(*ltp.ForceGasPrice)
-		} else {
-			tops.GasPrice = ltp.CurrentGas
-		}
+	if ltp.ForceGasPrice != nil && *ltp.ForceGasPrice != 0 {
+		tops.GasPrice = big.NewInt(0).SetUint64(*ltp.ForceGasPrice)
 	} else {
+		tops.GasPrice = ltp.CurrentGas
+	}
+	if ltp.ForceGasLimit != nil && *ltp.ForceGasLimit != 0 {
+		tops.GasLimit = *ltp.ForceGasLimit
+	}
+	if !*ltp.LegacyTransactionMode {
 		if ltp.ForcePriorityGasPrice != nil && *ltp.ForcePriorityGasPrice != 0 {
 			tops.GasTipCap = big.NewInt(0).SetUint64(*ltp.ForcePriorityGasPrice)
 		} else {
 			tops.GasTipCap = ltp.CurrentGasTipCap
 		}
-	}
-	if ltp.ForceGasLimit != nil && *ltp.ForceGasLimit != 0 {
-		tops.GasLimit = *ltp.ForceGasLimit
 	}
 	return tops
 }
